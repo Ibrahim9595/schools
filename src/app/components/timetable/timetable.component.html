@@ -1,0 +1,53 @@
+<div class="w3-row">
+  <div class="w3-col m10 s10">
+    <select #num (change)="addToTable(num.value); num.value=''">
+      <option value="" disabled selected>Select a day to add to table</option>
+      <option *ngFor="let day of days" [value]="day.dayNum">{{day.day}}</option>
+    </select>
+  </div>
+  <div class="w3-col m2 s2">
+    <a class="btn btn-floating btn-medium w3-tooltip" (click)="submitTable(day)" style="overflow: inherit">
+        <i class="material-icons">check</i>
+        <span style="position:absolute;left:30px;top:0px;font-size:8px;" 
+        class="w3-animate-opacity w3-text w3-tag">
+            submit table 
+        </span>
+    </a>
+  </div>
+</div>
+<div *ngFor="let error of errors" class="w3-animate-zoom w3-panel w3-red w3-round">
+  {{error}}
+</div>
+<div class="w3-row" *ngFor="let day of daysName">
+  <div *ngIf="timeTable[day]" class="table-row">
+    <div class="w3-col m1 s1">
+      {{day}}
+    </div>
+
+    <div class="w3-col m10 s10">
+      <app-timetable-cell *ngFor="let timeTableElement of timeTable[day]" 
+      [subjects]="subjects" 
+      [timeStart]="timeTableElement.timeStart"  
+      [timeEnd]="timeTableElement.timeEnd" 
+      [subject]="timeTableElement.subject" 
+      [staff]="timeTableElement.staff" 
+      [day]="timeTableElement.day"
+      [dayNum]="timeTableElement.dayNum" 
+      [id]="timeTableElement.id" 
+      [display]="false" [editable]="editable" 
+      (done)="elementDone($event, day)"
+      (removeElement)="removeElement($event, day)"></app-timetable-cell>
+    </div>
+
+    <div class="w3-col m1 s1">
+      <a class="btn btn-floating btn-medium w3-tooltip" (click)="addTimeSlot(day)" style="overflow: inherit">
+        <i class="material-icons">add</i>
+        <span style="position:absolute;left:30px;top:0px;font-size:10px;" 
+        class="w3-animate-opacity w3-text w3-tag">
+            Timeslot 
+        </span>
+      </a>
+    </div>
+  </div>
+
+</div>

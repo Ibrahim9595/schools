@@ -1,0 +1,129 @@
+<div class="row" *ngFor="let level of levels">
+  <div class="col s12 m12">
+    <div class="card darken-1">
+
+      <div class="card-content black-text">
+        <div class="row">
+
+          <div class="col s10 m10">
+            <span class="card-title">{{level.name}}</span>
+          </div>
+
+          <div class="col s2 m2">
+            <a class="btn-floating btn-tiny waves-effect waves-light yellow darken-2" (click)="newLevel(level);formModal.style.display='block'">
+              <i class="material-icons">mode_edit</i>
+            </a>
+            <a class="btn-floating btn-tiny waves-effect waves-light red" (click)="deleteLevel(level.id)">
+              <i class="material-icons">close</i>
+            </a>
+          </div>
+
+        </div>
+        <hr>
+
+        <div class="row">
+          <div class="col m10 s10">
+            <button (click)="openAccordion(accordion)" class="w3-button w3-block w3-left-align">Classes</button>
+          </div>
+          <div class="col m2 s2">
+            <a class="btn-floating btn-tiny green" (click)="formModal.style.display='block';newClass(level.id)">
+              <i class="material-icons">add</i>
+            </a>
+          </div>
+        </div>
+        <div #accordion class="w3-hide">
+          <div *ngIf="!level.classes.length">
+            <div class="w3-panel w3-red">
+              <p>No Classes in this level</p>
+            </div>
+          </div>
+
+          <table *ngIf="level.classes.length" class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+            <tr class="w3-blue">
+              <th>Class Name</th>
+              <th>Capacity</th>
+              <th>Minimum grade</th>
+              <th>Edit/Delete</th>
+            </tr>
+            <tr *ngFor="let class of level.classes">
+              <td><a [routerLink]= "'/class/'+class.id">{{class.name}}</a></td>
+              <td>{{class.capacity}}</td>
+              <td>{{class.minGrade}}</td>
+              <td>
+                <a class="btn-floating btn-tiny yellow darken-2" (click)="formModal.style.display='block';newClass(level.id, class)">
+                  <i class="material-icons">edit</i>
+                </a>
+                <a class="btn-floating btn-tiny red" (click)="deleteClass(class.id, level)">
+                  <i class="material-icons">close</i>
+                </a>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <hr>
+
+        <div class="row">
+          <div class="col m10 s10">
+            <button (click)="openAccordion(accordion1)" class="w3-button w3-block w3-left-align">Subjects</button>
+          </div>
+          <div class="col m2 s2">
+            <a class="btn-floating btn-tiny green" (click)="formModal.style.display='block';newSubject(level.id)">
+            <i class="material-icons">add</i>
+          </a>
+          </div>
+        </div>
+        <div #accordion1 class="w3-hide">
+          <div *ngIf="!level.subjects.length">
+            <div class="w3-panel w3-red">
+              <p>No Subjects in this level</p>
+            </div>
+          </div>
+          <table *ngIf="level.subjects.length" 
+          class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+            <tr class="w3-blue">
+              <th>Subject Name</th>
+              <th>Details</th>
+              <th>Syllabus</th>
+              <th>Edit/Delete</th>
+            </tr>
+            <tr *ngFor="let subject of level.subjects">
+              <td><a [routerLink]="'/subject/'+subject.id">{{subject.name}}</a></td>
+              <td>{{limit(subject.details, 30)}}</td>
+              <td>{{limit(subject.syllabus, 30)}}</td>
+              <td>
+                <a class="btn-floating btn-tiny yellow darken-2" 
+                (click)="formModal.style.display='block';newSubject(level.id, subject)">
+                  <i class="material-icons">edit</i>
+                </a>
+                <a class="btn-floating btn-tiny red" (click)="deleteSubject(subject.id, level)">
+                  <i class="material-icons">close</i>
+                </a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div #formModal class="w3-modal">
+  <div *ngIf="currentForm">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+      <header class="w3-container w3-black">
+        <span (click)="formModal.style.display='none';currentForm=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+        <h5>Edit {{currentForm.name}}</h5>
+      </header>
+
+      <app-dynamic-form [data]="currentForm" [options]="currentFormOptions" (save)="currentFunction($event)"></app-dynamic-form>
+      <div class="w3-container w3-light-grey w3-padding">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fixed-action-btn" (click)="formModal.style.display='block';newLevel()">
+  <a class="btn-floating btn-large red">
+    <i class="material-icons green darken-1">add</i>
+  </a>
+</div>

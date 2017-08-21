@@ -1,0 +1,19 @@
+@import url("../../../../node_modules/materialize-css/dist/css/materialize.min.css");
+
+.cell {
+    display: inline-block;
+    border: 1px solid black;
+    margin: 0;
+    padding: 10px;
+    overflow: auto;
+}
+
+select{
+    display: inherit;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+}
+

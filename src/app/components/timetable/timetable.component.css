@@ -1,0 +1,12 @@
+@import url("../../../../node_modules/materialize-css/dist/css/materialize.min.css");
+
+.table-row {
+    min-height: 200px;
+    border-bottom: 1px solid black;
+    padding: 20px 5px 20px 5px;
+    overflow: auto;
+}
+
+select {
+    display: inherit
+}

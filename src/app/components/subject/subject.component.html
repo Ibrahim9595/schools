@@ -1,0 +1,83 @@
+<div class="w3-bar w3-black">
+  <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 0" (click)="openedTab=0">Home</button>
+  <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 1" (click)="openedTab=1">Syllabus</button>
+  <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 2" (click)="openedTab=2;getAllStaff()">Staff List</button>
+</div>
+
+<div #wrapper *ngIf="subject">
+  <div [style.display]="openedTab == 0? 'block':'none'" class="w3-animate-right">
+    <h2>Main Details</h2>
+    <table class="w3-table-all">
+      <tr>
+        <td>Name: </td>
+        <td>{{subject.name}}</td>
+      </tr>
+      <tr>
+        <td>Level: </td>
+        <td>{{subject.level.name}}</td>
+      </tr>
+      <tr>
+        <td>Description: </td>
+        <td>{{subject.details}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div [style.display]="openedTab == 1? 'block':'none'" class="w3-animate-right">
+    <h2>Syllabus</h2>
+    <p>{{subject.syllabus}}</p>
+  </div>
+
+  <div [style.display]="openedTab == 2? 'block':'none'" class="w3-animate-right">
+    <div class="w3-row">
+      <div class="w3-col m6 s6">
+        <select class="w3-select" name="option" #id (change)="id.value">
+            <option value="" disabled selected>{{allStaff? 'Staff' : 'Loading...'}}</option>
+            <option *ngFor="let staff of allStaff | find: subject.staff:'id'" [value]="staff.id">
+              {{staff.name+'('+staff.staff_type.type+')'}}
+            </option>
+          </select>
+      </div>
+      <div class="w3-col m5 s5">
+        <input class="number" type="number" placeholder="Staff rate" [(ngModel)]="rate">
+      </div>
+      <div class="w3-col m1 s1">
+        <a class="btn-floating btn-tiny red" (click)="addStaffToSubject(newUserId, subject.id, rate)">
+          <i class="material-icons green darken-1">add</i>
+        </a>
+      </div>
+    </div>
+
+    
+    <div *ngIf="!subject.staff.length" class="w3-panel w3-red w3-round">
+      <p>No Staff in this subject!</p>
+    </div>
+    <table *ngIf="subject.staff.length" class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+      <tr class="w3-blue">
+        <th>Img</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Gender</th>
+        <th>Rate</th>
+        <th>Edit/Delete</th>
+      </tr>
+      <tr *ngFor="let staff of subject.staff">
+        <td><img [src]="staff.img" alt="profile-img" /></td>
+        <td><a [routerLink]="'/staff/'+staff.id">{{staff.name}}</a></td>
+        <td>{{staff.email}}</td>
+        <td>{{staff.gender}}</td>
+        <td>
+          <input type="number" [(ngModel)]="staff.rate" class="number">
+        </td>
+        <td>
+          <a class="btn-floating btn-tiny yellow darken-2" (click)="updateStaffToSubject(staff.id, subject.id, staff.rate)">
+            <i class="material-icons">edit</i>
+          </a>
+          <a class="btn-floating btn-tiny red" (click)="deleteStaffFromSubject(staff.id, subject.id)">
+            <i class="material-icons">close</i>
+          </a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

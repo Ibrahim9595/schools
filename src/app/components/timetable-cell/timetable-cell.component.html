@@ -1,0 +1,46 @@
+<div class="cell w3-animate-zoom">
+  <div class="w3-row">
+    <div class="w3-col m9 s9">
+      <div *ngIf="error" class="w3-animate-zoom w3-panel w3-red w3-round">
+        <p>Choose all data</p>
+      </div>
+    </div>
+    <div class="w3 m3 s3">
+      <i *ngIf="done && editable" class="material-icons close yellow darken-2 circle" (click)="done=false">mode_edit</i>
+      <i *ngIf="!done" class="material-icons close green circle" (click)="finish()">done</i>
+      <i *ngIf="editable" class="material-icons close red circle" (click)="remove()">close</i>
+    </div>
+  </div>
+  <div class="w3-row">
+    <div class="w3-col m6 s6">
+      <p>start time</p>
+      <p *ngIf="done">{{timeStart}}</p>
+      <input *ngIf="!done" type="time" [(ngModel)]="timeStart" #timestart>
+    </div>
+
+    <div class="w3-col m6 s6">
+      <p>end time</p>
+      <p *ngIf="done">{{timeEnd}}</p>
+      <input *ngIf="!done || timestart" type="time" [(ngModel)]="timeEnd">
+    </div>
+  </div>
+<hr>
+  <div class="w3-row">
+    <div class="w3-col m7 s7">
+      <p>Subject</p>
+      <p *ngIf="done">{{subject.name}}</p>
+      <select *ngIf="!done" #id [(ngModel)]="subjectId" (change)="getSubjectStaff(id.value)">
+        <option value="" disabled selected>Subjects</option>
+        <option *ngFor="let subject of subjects" [value]="subject.id">{{subject.name}}</option>
+      </select>
+    </div>
+    <div class="w3-col m5 s5" *ngIf="subject">
+      <p>Staff</p>
+       <p *ngIf="done">{{staff.name}}</p> 
+      <select *ngIf="!done" #id [(ngModel)]="staffId" (change)="setStaffName(id.value)">
+          <option *ngFor="let staff of subject.staff" [value]="staff.id">{{staff.name}}</option>
+        </select>
+    </div>
+  </div>
+
+</div>

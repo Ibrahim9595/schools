@@ -1,0 +1,79 @@
+<div class="row">
+  <form (ngSubmit)="save()" #form="ngForm" class="col s12">
+    <div *ngFor='let key of keys' class='row'>
+      <div *ngIf="newOptions[key]">
+        <div *ngIf="!newOptions[key].options && newOptions[key].type !== 'file'">
+          <div *ngIf="newOptions[key].type !== 'textarea'" class="input-field col s12">
+            <input [id]="key" [name]="key" class="validate" [type]="newOptions[key].type" [required]="newOptions[key].required" [minlength]="newOptions[key].minLength"
+              [max]="newOptions[key].max" [placeholder]="newOptions[key].placeholder" [step]="newOptions[key].step" [pattern]="newOptions[key].pattern"
+              [(ngModel)]="newModel[key]" #name="ngModel" />
+            <label for="name.id"></label>
+            <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+              <div *ngFor="let errKey of getKeys(name.errors)">
+
+                <span *ngIf="!newOptions[key].error">
+                {{errors[errKey] + ' ' + name.errors[errKey].requiredLength + ' chars'}}
+              </span>
+                <span *ngIf="newOptions[key].error">
+              {{newOptions[key].error}}
+            </span>
+
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="newOptions[key].type === 'textarea'">
+            <textarea [id]="key" [name]="key" class="materialize-textarea validate" [required]="newOptions[key].required" [minlength]="newOptions[key].minLength"
+              [max]="newOptions[key].max" [placeholder]="newOptions[key].placeholder" [step]="newOptions[key].step" [pattern]="newOptions[key].pattern"
+              [(ngModel)]="newModel[key]" #name="ngModel"></textarea>
+            <label for="name.id"></label>
+            <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+              <div *ngFor="let errKey of getKeys(name.errors)">
+
+                <span *ngIf="!newOptions[key].error">
+                {{errors[errKey] + ' ' + name.errors[errKey].requiredLength + ' chars'}}
+              </span>
+                <span *ngIf="newOptions[key].error">
+              {{newOptions[key].error}}
+            </span>
+
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="newOptions[key].match && !matchCheck(key, newOptions[key].match)">
+            <span *ngIf="!newOptions[key].error">
+                This field must match {{newOptions[key].match}}
+              </span>
+            <span *ngIf="newOptions[key].error">
+          {{newOptions[key].error}}
+      </span>
+          </div>
+
+        </div>
+
+        <div *ngIf="newOptions[key].type == 'file'">
+          <label *ngIf="uploadDone">Done</label>
+          <label *ngIf="uploadError">Error</label>
+          <label *ngIf="!uploadDone && !uploadError" [for]="key">
+        {{fileUploading? 'Loading...' : 'Upload'}}
+      </label>
+          <input [id]="key" class="file" type="file" #file (change)="upload(file.files[0], key)" />
+          <input [id]="key" class="file" type="text" [name]="key" [required]="newOptions[key].required" [(ngModel)]="newModel[key]"
+            #name="ngModel" />
+        </div>
+
+
+        <select *ngIf="newOptions[key].options" [id]="key" [name]="key" [required]="newOptions[key].required" [(ngModel)]="newModel[key]"
+          #name="ngModel">
+      <option *ngFor="let option of newOptions[key].options" [value]="option.value">{{option.key}}</option>
+    </select>
+      </div>
+    </div>
+    <button type="submit" [disabled]="!form.valid || !matchValid" 
+    class="btn waves-effect waves-light" 
+    type="submit" name="action">Save
+    <i class="material-icons">mail_outline</i>
+  </button>
+  </form>
+</div>

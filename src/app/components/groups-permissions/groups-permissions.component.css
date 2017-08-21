@@ -1,0 +1,12 @@
+@import url("../../../../node_modules/materialize-css/dist/css/materialize.min.css");
+.modalShow{
+    z-index: 1003; display: block; opacity: 1; transform: scaleX(1); top: 10%;
+}
+
+.w3-select{
+    display: block;
+}
+
+.close{
+    float: right;
+}

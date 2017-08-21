@@ -1,0 +1,187 @@
+<div class="row" *ngFor="let permissiongroup of permissionGroups">
+  <div class="col s12 m12">
+    <div class="card darken-1">
+        <a class="btn-flat btn-tiny waves-effect waves-light close" 
+        (click)="deletePermissionGroup(permissiongroup.id)">
+          <i class="material-icons">close</i>
+        </a>
+      <div class="card-content black-text">
+        <span class="card-title">{{permissiongroup.groupName}}</span>
+        <p>{{permissiongroup.description}}</p>
+      </div>
+      <div class="card-action">
+
+        <a (click)="permissionsModal.style.display='block';getAllPermissions(permissiongroup)" class="btn btn-floating  btn-medium w3-tooltip"
+          style="overflow: inherit" data-position="bottom" data-delay="50" data-tooltip="Permissions">
+            <i class="material-icons">menu</i>
+            <span style="position:absolute;left:0px;top:50px" class="w3-animate-opacity w3-text w3-tag w3-tiny">
+                 permissions
+            </span>
+        </a>
+
+        <a (click)="usersModal.style.display='block';getAllUsers(permissiongroup)" class="btn btn-floating btn-medium blue w3-tooltip"
+          style="overflow: inherit">
+          <i class="material-icons">supervisor_account</i>
+          <span style="position:absolute;left:0px;top:50px" class="w3-animate-opacity w3-text w3-tag w3-tiny">
+                 Users
+            </span>
+        </a>
+
+        <a (click)="formModal.style.display='block';openForm(permissiongroup)" class="btn btn-floating btn-medium yellow darken-3 w3-tooltip"
+          style="overflow: inherit">
+          <i class="material-icons">edit</i>
+          <span style="position:absolute;left:0px;top:50px" class="w3-animate-opacity w3-text w3-tag w3-tiny">
+                 Edit
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div #permissionsModal class="w3-modal">
+  <div *ngIf="currentGroup && permissions">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+      <header class="w3-container w3-black">
+        <span (click)="permissionsModal.style.display='none';clear();currentGroup=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+        <h5>{{currentGroup.groupName}}</h5>
+      </header>
+
+
+      <div class="collection" style="overflow-y: auto ; max-height: 300px;">
+        <div class="row">
+          <div class="col m4 s5">
+            <select class="w3-select" name="option" [(ngModel)]="currentPermission.id">
+            <option value="" disabled selected>Permissions</option>
+            <option *ngFor="let permission of permissions | find: currentGroup.permissions:'id'" 
+            [value]="permission.id">{{permission.name}}</option>
+          </select>
+          </div>
+          <div class="col m3 s5">
+            <select class="w3-select" name="option" [(ngModel)]="currentPermission.permissionLevel">
+            <option value="" disabled selected>permission level</option>
+            <option *ngFor="let permissionLevel of permissionLevels" [value]="permissionLevel.level">
+              {{permissionLevel.description}}  
+            </option>
+          </select>
+          </div>
+          <div class="col m1 s2">
+            <a class="btn-floating btn-medium waves-effect waves-light green" (click)="appendPermissionToGroup()">
+              <i class="material-icons">add</i>
+            </a>
+          </div>
+          <div class="input-field col m4 s12" style="top: -23px;">
+            <i class="material-icons prefix">search</i>
+            <input id="search" type="text" [(ngModel)]="searchFilter">
+            <label for="search">Search</label>
+          </div>
+        </div>
+
+
+        <ul class="collection">
+          <li *ngFor="let permission of currentGroup.permissions | filter:'name':searchFilter" class="collection-item dismissable">
+            <div class="w3-row">
+              <div class="w3-col m6 s12">
+                <p>{{permission.name}}</p>
+              </div>
+              <div class="w3-col m4 s6">
+                <select class="w3-select" name="option" [(ngModel)]="permission.permissionLevel" #newPermissionLevel (change)="updatePermissionOfGroup(newPermissionLevel.value, permission)">
+                  <option value="permission level" disabled >permission level</option>
+                  <option *ngFor="let permissionLevel of permissionLevels" 
+                  [value]="permissionLevel.level">
+                    {{permissionLevel.description}}  
+                  </option>
+                </select>
+              </div>
+              <div class="w3-col m2 s6">
+                <a class="btn-floating btn-tiny waves-effect waves-light red close" (click)="deletePermissionOfGroup(permission)">
+                   <i class="material-icons">close</i>
+                  </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="w3-container w3-light-grey w3-padding">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div #usersModal class="w3-modal">
+  <div *ngIf="currentGroup && users">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+      <header class="w3-container w3-black">
+        <span (click)="usersModal.style.display='none';currentGroup=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+        <h5>{{currentGroup.groupName}}</h5>
+      </header>
+
+      <div class="collection" style="overflow-y: auto ; max-height: 300px;">
+        <div class="row">
+          <div class="col m4 s5">
+            <select class="w3-select" name="option" #user>
+            <option value="" disabled selected>Select a User</option>
+            <option *ngFor="let user of users | find: currentGroup.users:'id'" 
+            [value]="user.id">{{user.name+'('+user.userType+')'}}</option>
+          </select>
+          </div>
+
+          <div class="col m2 s2">
+            <a class="btn-floating btn-medium waves-effect waves-light green" (click)="addUserToPermissionGroup(user.value)">
+              <i class="material-icons">add</i>
+            </a>
+          </div>
+          <div class="input-field col m6 s12" style="top: -23px;">
+            <i class="material-icons prefix">search</i>
+            <input id="search" type="text" [(ngModel)]="searchFilter">
+            <label for="search">Search</label>
+          </div>
+        </div>
+
+
+        <ul class="collection">
+          <li *ngFor="let user of currentGroup.users | filter:'name':searchFilter" class="collection-item dismissable">
+            <div class="w3-row">
+              <div class="w3-col m10 s6">
+                <p>{{user.name+'('+user.userType+')'}}</p>
+                <p>{{user.email}}</p>
+              </div>
+
+              <div class="w3-col m2 s6">
+                <a class="btn-floating btn-tiny waves-effect waves-light red close" (click)="deleteUserFromPermissionGroup(user.id)">
+                   <i class="material-icons">close</i>
+                  </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="w3-container w3-light-grey w3-padding">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div #formModal class="w3-modal">
+  <div *ngIf="permissionGroup">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+      <header class="w3-container w3-black">
+        <span (click)="formModal.style.display='none';clear();permissionGroup=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+        <h5>Edit {{permissionGroup.groupName}}</h5>
+      </header>
+
+      <app-dynamic-form [data]="permissionGroup" [options]="permissionGroupFormOptions" (save)="permissionGroup.updating? updatePermissionGroup() : createPermissionGroup()"></app-dynamic-form>
+      <div class="w3-container w3-light-grey w3-padding">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fixed-action-btn" (click)="formModal.style.display='block';openForm()">
+  <a class="btn-floating btn-large red">
+    <i class="material-icons green darken-1">add</i>
+  </a>
+</div>

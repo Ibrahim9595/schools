@@ -1,0 +1,15 @@
+@import url("../../../../node_modules/materialize-css/dist/css/materialize.min.css");
+
+table tr td:first-child{
+    width: 20%;
+}
+
+.right {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+}
+
+.pointer {
+    cursor: pointer;
+}

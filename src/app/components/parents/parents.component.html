@@ -1,0 +1,26 @@
+<!-- <button (click)="openForm()">New</button>
+
+<div *ngIf="parents">
+  <div *ngFor="let parent of parents">
+    <button md-icon-button (click)="deleteParent(parent.userId)">
+          <md-icon>close</md-icon>
+      </button>
+    <h3>{{parent.name}}</h3>
+    <p>{{parent.email}}</p>
+    <p>{{parent.job}}</p>
+    <button (click)="openForm(parent)">Edit</button>
+    <button (click)="getParentDetails(parent.id)">details</button>
+  </div>
+</div>
+
+<div *ngIf="parent">
+  <button md-icon-button (click)="parent = null">
+          <md-icon>close</md-icon>
+    </button>
+  <input type="text" [(ngModel)]='parent.name' placeholder="name">
+  <input type="email" [(ngModel)]='parent.email' placeholder="email">
+  <input type="password" [(ngModel)]='parent.password' placeholder="password" *ngIf="!parent.updating">
+  <input type="text" [(ngModel)]='parent.parent.job' placeholder="job">
+  <button *ngIf="parent.updating" (click)="updateParent(parent)">Save</button>
+  <button *ngIf="!parent.updating" (click)="createParent(parent)">Save</button>
+</div> -->

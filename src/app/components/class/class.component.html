@@ -1,0 +1,127 @@
+<div class="w3-bar w3-black">
+    <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 0" (click)="openedTab=0">Home</button>
+    <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 1" (click)="openedTab=1">Subjects List</button>
+    <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 2" (click)="openedTab=2">Students List</button>
+    <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 3" (click)="openedTab=3">TimeTable</button>
+</div>
+
+<div #wrapper *ngIf="class">
+    <div [style.display]="openedTab == 0? 'block':'none'" class="w3-animate-right">
+        <h2>Main Details</h2>
+        <table class="w3-table-all">
+            <tr>
+                <td>Name: </td>
+                <td>{{class.name}}</td>
+            </tr>
+            <tr>
+                <td>Level: </td>
+                <td>{{class.level.name}}</td>
+            </tr>
+            <tr>
+                <td>Maximum capacity: </td>
+                <td>{{class.capacity}}</td>
+            </tr>
+            <tr>
+                <td>Minimum Grade: </td>
+                <td>{{class.minGrade? class.minGrade+'%' : '-'}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div [style.display]="openedTab == 1? 'block':'none'" class="w3-animate-right">
+        <div *ngIf="!class.classSubjects.length" class="w3-panel w3-red w3-round">
+            No data
+        </div>
+        <table *ngIf="class.classSubjects.length" class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+            <tr class="w3-blue">
+                <th>Subject</th>
+                <th>Staff</th>
+                <th>Abcence</th>
+                <th>Assignments</th>
+            </tr>
+            <tr *ngFor="let subject of class.classSubjects">
+                <td><a [routerLink]="'/subject/'+subject.subject.id">{{subject.subject.name}}</a></td>
+                <td>
+                    <ul>
+                        <li *ngFor="let staff of subject.staff">{{staff.name}}</li>
+                    </ul>
+                </td>
+                <td>
+                    <button class="btn-floating btn-tiny waves-effect waves-light red">
+                        <i class="material-icons">list</i>
+                    </button>
+                </td>
+                <td>
+                    <button class="btn-floating btn-tiny waves-effect waves-light">
+                        <i class="material-icons">assignment</i>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div [style.display]="openedTab == 2? 'block':'none'" class="w3-animate-right">
+        <div *ngIf="!class.students.length" class="w3-panel w3-red w3-round">
+            No data
+        </div>
+        <table *ngIf="class.students.length" class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+            <tr class="w3-blue">
+                <th>Img</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Delete</th>
+            </tr>
+            <tr *ngFor="let student of class.students">
+                <td><img [src]="student.img" alt="profile-img" /></td>
+                <td><a [routerLink]="'/student/'+student.id">{{student.name}}</a></td>
+                <td>{{student.email}}</td>
+                <td>{{student.gender}}</td>
+                <td>
+                    <button class="btn-floating btn-tiny red" (click)="deleteStudentFromClass(student.id)">
+                        <i class="material-icons">close</i>
+                    </button>
+                </td>
+            </tr>
+        </table>
+
+        <button class="btn-floating btn-large green right darken-2" (click)="formModal.style.display='block'">
+            <i class="material-icons">add</i>
+        </button>
+    </div>
+
+    <div [style.display]="openedTab == 3? 'block':'none'" class="w3-animate-right">
+        <app-timetable *ngIf="class" [subjects]="class.level.subjects" [editable]="true" [classId]="class.id" [timeTable]="class.timeTable"
+            (save)="updateTimeTable($event)">
+        </app-timetable>
+    </div>
+</div>
+
+<div #formModal class="w3-modal">
+    <div *ngIf="class">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+            <header class="w3-container w3-black">
+                <span (click)="formModal.style.display='none';" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+                <h5>Select student</h5>
+            </header>
+            <div class="w3-container w3-light-grey w3-padding">
+                <input type="text" [(ngModel)]="searchQuery">
+                <ul class="w3-ul w3-hoverable">
+                    <li #el *ngFor="let student of class.level.students | find: class.students:'id' | filter: 'name':searchQuery"
+                    (click)="addtoWaitingList(student, el)" 
+                    class="w3-display-container pointer">
+                        <img [src]="student.img"
+                        class="w3-left w3-circle w3-margin-right" 
+                        style="width:50px" alt="profile-img">
+                        <span class="w3-large">{{student.name}}</span><br>
+                        <span>{{student.email}}</span><br>
+                        <span>{{student.gender}}</span>
+                    </li>
+                </ul>
+                <button class="btn-floating btn-large green right darken-2" (click)="appendStudentsToClass()">
+                    <i class="material-icons">send</i> Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

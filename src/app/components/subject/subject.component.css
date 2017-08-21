@@ -1,0 +1,26 @@
+@import url("../../../../node_modules/materialize-css/dist/css/materialize.min.css");
+
+table tr td:first-child{
+    width: 10%;
+}
+
+.number {
+    width: 20px;
+    text-align: center;
+}
+
+.right {
+    float: right;
+}
+
+.w3-red {
+    padding: 0 20px 0 20px;
+}
+
+.number {
+    text-align: center;
+}
+
+select {
+    display: inherit;
+}
