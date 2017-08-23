@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { remove, findIndex } from 'lodash';
+import { remove, findIndex, groupBy } from 'lodash';
 import 'rxjs/add/operator/switchMap';
 
 import { ClassServiceService } from './class-service.service';
+
 
 @Component({
   selector: 'app-class',
@@ -16,6 +17,12 @@ export class ClassComponent implements OnInit {
   openedTab: number = 0;
   studentWaitingList: any[] = [];
   studentSendList: any[] = [];
+  dateStart: string;
+  dateEnd: string;
+  currentSubject: any;
+  absence: any[];
+  absenceKeys: any = [];
+  newAbsenceList: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +37,10 @@ export class ClassComponent implements OnInit {
       .subscribe(({ data }) => {
         this.class = data.class;
       });
+
+    let date = new Date();
+    this.dateStart = date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear();
+    this.dateEnd = this.dateStart;
   }
 
   updateTimeTable(data) {
@@ -42,34 +53,82 @@ export class ClassComponent implements OnInit {
   addtoWaitingList(student, el: HTMLLIElement) {
     let index = findIndex(this.studentWaitingList, { id: student.id });
 
-    if(index != -1){
+    if (index != -1) {
       this.studentWaitingList.splice(index, 1);
       this.studentSendList.splice(index, 1);
       el.className = el.className.replace('w3-teal', '');
-    }else{
+    } else {
       this.studentWaitingList.push(student);
       this.studentSendList.push(student.id);
       el.className += ' w3-teal';
     }
-  } 
+  }
 
   appendStudentsToClass() {
     this.service.appendStudentsToClass(this.class.id, this.studentSendList)
-    .subscribe(({data}) => {
-      this.studentWaitingList.map(student => {this.class.students.push(student)});
-      this.studentSendList = [];
-      this.studentWaitingList = [];
-    });
+      .subscribe(({ data }) => {
+        this.studentWaitingList.map(student => { this.class.students.push(student) });
+        this.studentSendList = [];
+        this.studentWaitingList = [];
+      });
   }
 
   deleteStudentFromClass(studentId) {
     let confirmation = confirm("Are you sure you want to remove this student?");
-    
+
     if (confirmation) {
       this.service.deleteStudentFromClass(this.class.id, studentId)
         .subscribe(({ data }) => {
           remove(this.class.students, { id: studentId });
         });
     }
+  }
+
+  getAbcence() {
+    console.log(this.dateStart, this.dateEnd);
+    this.service.absence(this.dateStart, this.dateEnd, this.class.id)
+      .subscribe(({ data }) => {
+        this.absenceKeys = [];
+        this.absence = groupBy(data.absence, 'date');
+        for (let i in this.absence) {
+          this.absence[i] = groupBy(this.absence[i], 'student.id');
+          this.absenceKeys.push({ date: i, students: [] });
+          for (let j in this.absence[i]) {
+            this.absenceKeys[this.absenceKeys.length - 1].students.push(j);
+          }
+        }
+        console.log(this.absence);
+      })
+  }
+
+  addNewAbsenceList(subject) {
+    this.currentSubject = subject;
+    this.newAbsenceList = {};
+
+    for (let student of this.class.students) {
+      this.newAbsenceList[student.id] = { studentId: student.id, notes: '', absent: false };
+    }
+  }
+
+  appendAbsenceDay() {
+    let list = [];
+    for (let el in this.newAbsenceList) {
+      if (this.newAbsenceList[el].absent) {
+        list.push({...this.newAbsenceList[el]});
+        delete list[list.length-1].absent;
+      }
+
+    }
+
+    let date = new Date();
+    let today = date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear();
+
+    this.service.appendAbsenceDay(today, this.class.id, this.currentSubject.staff[0].id, this.currentSubject.subject.id, list)
+      .subscribe(({ data }) => {
+        alert("Absence Added");
+      }, (err) => {
+        console.log(err);
+        alert('error');
+      });
   }
 }

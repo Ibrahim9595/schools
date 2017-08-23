@@ -3,6 +3,7 @@
     <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 1" (click)="openedTab=1">Subjects List</button>
     <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 2" (click)="openedTab=2">Students List</button>
     <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 3" (click)="openedTab=3">TimeTable</button>
+    <button class="w3-bar-item w3-button" [class.w3-teal]="openedTab == 4" (click)="openedTab=4;getAbcence()">Absence</button>
 </div>
 
 <div #wrapper *ngIf="class">
@@ -47,7 +48,8 @@
                     </ul>
                 </td>
                 <td>
-                    <button class="btn-floating btn-tiny waves-effect waves-light red">
+                    <button class="btn-floating btn-tiny waves-effect waves-light red" 
+                    (click)="abcenceModal.style.display='block';addNewAbsenceList(subject)">
                         <i class="material-icons">list</i>
                     </button>
                 </td>
@@ -95,6 +97,83 @@
             (save)="updateTimeTable($event)">
         </app-timetable>
     </div>
+
+    <div [style.display]="openedTab == 4? 'block':'none'" class="w3-animate-right">
+        <div class="w3-row">
+            <div class="w3-col m3 s3">
+                <label for="dateStart">From</label>
+                <input type="date" id="dateStart" [(ngModel)]="dateStart">
+            </div>
+
+            <div class="w3-col m3 s3">
+                <label for="dateEnd">To</label>
+                <input type="date" id="dateEnd" [(ngModel)]="dateEnd">
+            </div>
+
+            <div class="w3-col m2 s2">
+                <button class="btn-floating btn-tiny waves-effect waves-light" (click)="getAbcence()">
+                            <i class="material-icons">send</i>
+                        </button>
+            </div>
+        </div>
+        <div *ngFor="let keys of absenceKeys">
+            <div>
+                <h4>
+                    <i class="material-icons">date_range</i> {{keys.date}}
+                </h4>
+            </div>
+
+            <div *ngFor="let key of keys.students" class="card darken-1">
+                <div class="card-content black-text">
+                    <span class="card-title">
+                        <div class="w3-row">
+                            <div class="w3-col m1 s1">
+                                    <img 
+                                    [src]="absence[keys.date][key][0].student.img" 
+                                    alt="profile-img">
+                            </div>
+                            <div class="w3-col m11 s11">
+                                {{absence[keys.date][key][0].student.name}} <br>
+                                {{absence[keys.date][key][0].student.email}}
+                            </div>
+                        </div>
+                        
+                    </span>
+                </div>
+                <div class="card-action">
+
+                    <a *ngIf="table.style.display != 'block'" class="btn btn-floating  btn-medium w3-tooltip yellow darken-1" style="overflow: inherit"
+                        (click)="table.style.display='block'">
+                        <i class="material-icons">details</i>
+                        <span style="position:absolute;left:0px;top:50px" 
+                        class="w3-animate-opacity w3-text w3-tag w3-tiny">
+                            Details
+                        </span>
+                    </a>
+                    <a *ngIf="table.style.display == 'block'" class="btn btn-floating  btn-medium w3-tooltip red" style="overflow: inherit" (click)="table.style.display='none'">
+                        <i class="material-icons">close</i>
+                    </a>
+                    <div #table style="display:none">
+                        <table class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+                            <tr class="w3-blue">
+                                <th>Subject</th>
+                                <th>Staff</th>
+                                <th>Reason</th>
+                                <th>Notes</th>
+                            </tr>
+                            <tr *ngFor="let d of absence[keys.date][key]">
+                                <td>{{d.subject.name}}</td>
+                                <td>{{d.staff.name}}</td>
+                                <td>{{d.reason || '-'}}</td>
+                                <td>{{d.notes}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div #formModal class="w3-modal">
@@ -107,18 +186,53 @@
             <div class="w3-container w3-light-grey w3-padding">
                 <input type="text" [(ngModel)]="searchQuery">
                 <ul class="w3-ul w3-hoverable">
-                    <li #el *ngFor="let student of class.level.students | find: class.students:'id' | filter: 'name':searchQuery"
-                    (click)="addtoWaitingList(student, el)" 
-                    class="w3-display-container pointer">
-                        <img [src]="student.img"
-                        class="w3-left w3-circle w3-margin-right" 
-                        style="width:50px" alt="profile-img">
+                    <li #el *ngFor="let student of class.level.students | find: class.students:'id' | filter: 'name':searchQuery" (click)="addtoWaitingList(student, el)"
+                        class="w3-display-container pointer">
+                        <img [src]="student.img" class="w3-left w3-circle w3-margin-right" style="width:50px" alt="profile-img">
                         <span class="w3-large">{{student.name}}</span><br>
                         <span>{{student.email}}</span><br>
                         <span>{{student.gender}}</span>
                     </li>
                 </ul>
                 <button class="btn-floating btn-large green right darken-2" (click)="appendStudentsToClass()">
+                    <i class="material-icons">send</i> Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div #abcenceModal class="w3-modal">
+    <div *ngIf="newAbsenceList">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+            <header class="w3-container w3-black">
+                <span (click)="abcenceModal.style.display='none';" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+                <h5>Today's abcence</h5>
+            </header>
+            <div class="w3-container w3-light-grey w3-padding">
+                <table *ngIf="class.students.length" class="w3-table w3-animate-zoom w3-hoverable w3-centered w3-table-all">
+                    <tr class="w3-blue">
+                        <th>Img</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Is Abcent?</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr *ngFor="let student of class.students">
+                        <td><img [src]="student.img" alt="profile-img" /></td>
+                        <td><a [routerLink]="'/student/'+student.id">{{student.name}}</a></td>
+                        <td>{{student.gender}}</td>
+                        <td>
+                            <div class="switch">
+                                <label>No<input type="checkbox" [(ngModel)]="newAbsenceList[student.id].absent"><span class="lever"></span>Yes</label>
+                            </div>
+                        </td>
+                        <td>
+                            <textarea id="textarea1" class="materialize-textarea" [(ngModel)]="newAbsenceList[student.id].notes"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <button class="btn-floating btn-large green right darken-2" (click)="appendAbsenceDay()">
                     <i class="material-icons">send</i> Submit
                 </button>
             </div>

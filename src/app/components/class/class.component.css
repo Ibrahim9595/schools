@@ -13,3 +13,19 @@ table tr td:first-child{
 .pointer {
     cursor: pointer;
 }
+
+.details-table{
+    display: none;
+}
+
+.details-table tr td:first-child {
+    width: inherit; 
+}
+
+.card-action {
+    direction:rtl;
+}
+
+select {
+    display: inherit;
+}

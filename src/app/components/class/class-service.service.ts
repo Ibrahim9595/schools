@@ -144,4 +144,62 @@ export class ClassServiceService {
       }
     });
   }
+
+  absence(dateStart, dateEnd, classId) {
+    let abcence = `
+    query absence($dateStart: String!, $dateEnd: String!, $classId: Int!){
+      absence(dateStart: $dateStart, dateEnd:$dateEnd, classId:$classId){
+        date
+        staff{
+          id
+          name
+          email
+          img
+        }
+        student{
+          id
+          name
+          email
+          img
+        }
+        subject{
+          id
+          name
+        }
+        notes
+      }
+    }`;
+
+    return this.service.getUnCashed({
+      operationName: 'absence',
+      query: abcence,
+      variables: {
+        dateStart,
+        dateEnd,
+        classId
+      }
+    });
+  }
+
+  appendAbsenceDay(date, classId, staffId, subjectId, absentStudents) {
+    const appendAbsenceDay = gql`
+    mutation appendAbsenceDay($date: String!, $classId: Int!, $staffId: Int!, $subjectId: Int!, $absentStudents: [AbsentStudent!]!){
+      appendAbsenceDay(date: $date, classId: $classId, staffId: $staffId, subjectId: $subjectId, absentStudents: $absentStudents)
+    }`;
+
+    interface data {
+      appendAbsenceDay: boolean
+    }
+
+    return this.apollo.mutate<data>({
+      mutation: appendAbsenceDay,
+      variables: {
+        date, 
+        classId, 
+        staffId, 
+        subjectId, 
+        absentStudents
+      }
+    });
+  }
 }
