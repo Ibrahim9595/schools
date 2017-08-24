@@ -63,19 +63,25 @@ export class DynamicFormComponent implements OnInit {
   }
 
   upload(file, key){
+
     this.fileUploading = true;
-    let formData = new FormData();
+    setTimeout(()=>{
+       let formData = new FormData();
     formData.append('file', file);
     this.http.post(this.newOptions[key].endPointOptions.url, formData)
     .map(data => data.json())
     .subscribe((data:any) => {
       this.newModel[key] = data[this.newOptions[key].endPointOptions.key];
       this.uploadDone = true;
-    },err=>this.uploadError=true);
+      this.fileUploading=false;
+    },err=>console.log(err));
+    },2000)
+   
     
   }
 
   save() {
+  
     for(let tempKeys in this.newModel){
       let keys = tempKeys.split('.');
       let lastKey = keys.pop();

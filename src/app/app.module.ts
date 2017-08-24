@@ -23,7 +23,9 @@ import { ClassComponent } from './components/class/class.component';
 import { TimetableCellComponent } from './components/timetable-cell/timetable-cell.component';
 import { SubjectComponent } from './components/subject/subject.component';
 import { TimetableComponent } from './components/timetable/timetable.component';
-
+import { PaginationComponent } from './components/pagination/pagination.component';
+import { StudentComponent } from './components/student/student.component';
+import { StaffComponent } from './components/staff/staff.component';
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
@@ -52,6 +54,9 @@ export function provideClient(): ApolloClient {
     TimetableCellComponent,
     SubjectComponent,
     TimetableComponent,
+    PaginationComponent,
+    StudentComponent,
+    StaffComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,7 +71,7 @@ export function provideClient(): ApolloClient {
 
   ],
   schemas: [NO_ERRORS_SCHEMA],
-  providers: [NoCashedQueryService],
+  providers: [NoCashedQueryService, ],
   bootstrap: [AppComponent]
 })
 

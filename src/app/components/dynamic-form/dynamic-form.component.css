@@ -6,3 +6,15 @@
 span{
     color: red;
 }
+.Fspan{
+    color: white;
+    font-size: 14px;
+
+}
+.Fhide{
+    display: none;
+
+}
+select{
+    display: inherit;
+}

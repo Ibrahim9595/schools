@@ -5,6 +5,7 @@ export interface PermissionGroup {
     id: number
     groupName: string
     description: string
+    count: number
     permissions: Permission[]
     users: User[]
     belongsTo: boolean

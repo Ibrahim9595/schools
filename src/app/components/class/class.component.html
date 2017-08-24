@@ -48,13 +48,12 @@
                     </ul>
                 </td>
                 <td>
-                    <button class="btn-floating btn-tiny waves-effect waves-light red" 
-                    (click)="abcenceModal.style.display='block';addNewAbsenceList(subject)">
+                    <button class="btn-floating btn-tiny waves-effect waves-light red" (click)="abcenceModal.style.display='block';addNewAbsenceList(subject)">
                         <i class="material-icons">list</i>
                     </button>
                 </td>
                 <td>
-                    <button class="btn-floating btn-tiny waves-effect waves-light">
+                    <button class="btn-floating btn-tiny waves-effect waves-light" (click)="assignmentModal.style.display='block'; getAssignments(subject.subject)">
                         <i class="material-icons">assignment</i>
                     </button>
                 </td>
@@ -232,10 +231,42 @@
                         </td>
                     </tr>
                 </table>
-                <button class="btn-floating btn-large green right darken-2" (click)="appendAbsenceDay()">
-                    <i class="material-icons">send</i> Submit
-                </button>
             </div>
         </div>
     </div>
+    <button class="btn-floating btn-large green right darken-2" (click)="appendAbsenceDay()">
+        <i class="material-icons">send</i> Submit
+    </button>
+</div>
+
+<div #assignmentModal class="w3-modal">
+    <div *ngIf="assignments">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+            <header class="w3-container w3-black">
+                <span (click)="assignmentModal.style.display='none';" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+                <h5>Assignments</h5>
+            </header>
+            <div class="w3-container w3-light-grey w3-padding hidden-flow" >
+                <ul *ngIf="!currentAssignment" class="w3-hoverable w3-ul w3-card-4 w3-animate-left">
+                    <li *ngFor="let assignment of assignments" class="w3-padding-16 pointer" (click)="currentAssignment=assignment">
+                        <span class="w3-large">{{assignment.notes}}</span><br>
+                        <span>Due: {{assignment.dueDate | date}}</span><br>
+                        <span>Score: {{assignment.finalScore}}</span>
+                    </li>
+                </ul>
+
+                <div *ngIf="currentAssignment" class="w3-animate-zoom">
+                    <button class="btn btn-tiny btn-flat back" (click)="currentAssignment=null">
+                        <i class="material-icons">arrow_back</i>
+                    </button>
+                    <div>
+                        {{currentAssignment | json}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn-floating btn-large green right darken-2" (click)="test()">
+        <i class="material-icons">add</i>
+    </button>
 </div>

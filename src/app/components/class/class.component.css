@@ -29,3 +29,11 @@ table tr td:first-child{
 select {
     display: inherit;
 }
+
+.hidden-flow {
+    overflow: hidden;
+}
+
+.back {
+    color: #5757F3;
+}

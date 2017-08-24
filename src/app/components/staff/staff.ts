@@ -1,4 +1,4 @@
-export interface Parent {
+export interface Staff{
     id: number,
     name: string,
     email: string,
@@ -7,8 +7,13 @@ export interface Parent {
     img: string,
     gender: string,
     job: string,
-    count: number;
-    children: any[],
+    password:string,
+    repeatpassword:string,
+    staff_type:any,
+    count: number,
     permissionGroups: any[],
-    permissions: any[]
+    timeTable: any[]
+    isupdating: boolean;
+
+
 }

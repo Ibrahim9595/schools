@@ -6,34 +6,28 @@ import gql from 'graphql-tag';
 import { find } from 'lodash';
 import 'rxjs/add/operator/map';
 
-import { Parent } from './parent';
+import { Staff } from './staff';
 
 @Injectable()
-export class ParentsService {
+export class StaffService {
 
   constructor(private apollo: Apollo, private http: Http) { }
 
-  init(limit,offset)  {
-    const Parents = `
-      query Parents($limit:Int,$offset:Int) {
-        parents(limit:$limit,offset:$offset){
+  init(limit,offset) {
+    const staff = `
+      query staff($limit:Int,$offset:Int) {
+        staffs(limit:$limit,offset:$offset){
           id
           userId
-          userTypeId
           name
           email
           gender
           img
           job
           count
-          children {
-            id
-            name
-            email
-            gender
-            img
-            userId
-            userTypeId
+          staff_type{
+              id
+              type
           }
           permissionGroups {
             id
@@ -43,8 +37,8 @@ export class ParentsService {
       }`;
 
     return this.getUnCashed({
-      operationName: 'Parents',
-      query: Parents,
+      operationName: 'staff',
+      query: staff,
        variables: {
           limit,
           offset
@@ -56,44 +50,58 @@ export class ParentsService {
     return this.http.post('http://10.1.1.28:7070/graphql', payload)
       .map((data) => data.json());
   }
+  getStafftypes(){
+    const StaffType =gql `
+        query StaffType{
+          staffTypes{
+            id
+            type
+          }
+        }
+    `;
+    return this.apollo.watchQuery<any>({
+      query: StaffType
+    });
+  }
 
-  createParent(user, parent) {
-    const createParent = gql `
-      mutation createParent($user: UserInputAdd!, $parent: ParentInput!){
-        createParent(user: $user, parent: $parent){
-          id
+  createStaff(user, staff) {
+    const createStaff = gql `
+      mutation createStaff($user: UserInputAdd!, $staff: StaffInput!){
+        createStaff(user: $user, staff: $staff){
+           id
           userId
-          userTypeId
           name
           email
-          img
           gender
+          img
           job
-         
+          staff_type{
+              id
+              type
+          }
         }
       }`;
 
-      return this.apollo.mutate<Parent>({
-        mutation: createParent,
+      return this.apollo.mutate<Staff>({
+        mutation: createStaff,
         variables: {
           user,
-          parent
+          staff
         }
       });
   }
 
-  updateParent(id, user, parent) {
-    const updateParent = gql `
-      mutation updateParent($id:Int!, $user: UserInputUpdate!, $parent: ParentInput!){
-        updateParent(id: $id, user: $user, parent: $parent)
+  updateStaff(id, user, staff) {
+    const updateStaff = gql `
+      mutation updateStaff($id:Int!, $user: UserInputUpdate!, $staff:  StaffInput!){
+        updateStaff(id: $id, user: $user, staff: $staff)
       }`;
-
       return this.apollo.mutate({
-        mutation: updateParent,
+        mutation: updateStaff,
         variables: {
           id,
           user,
-          parent
+          staff
         }
       });
   }

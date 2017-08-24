@@ -1,13 +1,13 @@
 <div class="row">
   <form (ngSubmit)="save()" #form="ngForm" class="col s12">
     <div *ngFor='let key of keys' class='row'>
-      <div *ngIf="newOptions[key]">
+      <div *ngIf="newOptions[key] && newModel[key] != 'undefined'">
         <div *ngIf="!newOptions[key].options && newOptions[key].type !== 'file'">
           <div *ngIf="newOptions[key].type !== 'textarea'" class="input-field col s12">
             <input [id]="key" [name]="key" class="validate" [type]="newOptions[key].type" [required]="newOptions[key].required" [minlength]="newOptions[key].minLength"
-              [max]="newOptions[key].max" [placeholder]="newOptions[key].placeholder" [step]="newOptions[key].step" [pattern]="newOptions[key].pattern"
+              [max]="newOptions[key].max"  [step]="newOptions[key].step" [pattern]="newOptions[key].pattern"
               [(ngModel)]="newModel[key]" #name="ngModel" />
-            <label for="name.id"></label>
+            <label *ngIf="newModel[key]==null" for="name.id">{{newOptions[key].placeholder}}</label>
             <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
               <div *ngFor="let errKey of getKeys(name.errors)">
 
@@ -52,7 +52,32 @@
 
         </div>
 
-        <div *ngIf="newOptions[key].type == 'file'">
+        <div *ngIf="newOptions[key].type == 'file'" class="file-field input-field row">
+                <div *ngIf="fileUploading"  class="preloader-wrapper small active left">
+                  <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                      <div class="circle"></div>
+                    </div><div class="gap-patch">
+                      <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                      <div class="circle"></div>
+                    </div>
+                  </div>
+                </div>
+                <div [class.Fhide]="fileUploading"  class="btn blue">
+                  <span class="Fspan " *ngIf="uploadDone">Done</span>
+                  <span class="Fspan" *ngIf="uploadError">Error</span>
+                  <span class="Fspan" *ngIf="!uploadDone && !uploadError" [for]="key">
+                   Upload
+                  </span>
+                  <input type="file" #file (change)="upload(file.files[0], key)">
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text">
+                </div>
+
+          </div>
+        <!-- <div >
           <label *ngIf="uploadDone">Done</label>
           <label *ngIf="uploadError">Error</label>
           <label *ngIf="!uploadDone && !uploadError" [for]="key">
@@ -61,10 +86,10 @@
           <input [id]="key" class="file" type="file" #file (change)="upload(file.files[0], key)" />
           <input [id]="key" class="file" type="text" [name]="key" [required]="newOptions[key].required" [(ngModel)]="newModel[key]"
             #name="ngModel" />
-        </div>
+        </div> -->
 
 
-        <select *ngIf="newOptions[key].options" [id]="key" [name]="key" [required]="newOptions[key].required" [(ngModel)]="newModel[key]"
+        <select style="border: 1px solid #000" *ngIf="newOptions[key].options" [id]="key" [name]="key" [required]="newOptions[key].required" [(ngModel)]="newModel[key]"
           #name="ngModel">
       <option *ngFor="let option of newOptions[key].options" [value]="option.value">{{option.key}}</option>
     </select>

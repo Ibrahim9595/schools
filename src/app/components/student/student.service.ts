@@ -6,45 +6,54 @@ import gql from 'graphql-tag';
 import { find } from 'lodash';
 import 'rxjs/add/operator/map';
 
-import { Parent } from './parent';
+import { student } from './student';
 
 @Injectable()
-export class ParentsService {
+export class StudentService {
 
   constructor(private apollo: Apollo, private http: Http) { }
 
-  init(limit,offset)  {
-    const Parents = `
-      query Parents($limit:Int,$offset:Int) {
-        parents(limit:$limit,offset:$offset){
+  init(limit,offset) {
+    const students = `
+      query students($limit:Int,$offset:Int) {
+        students(limit:$limit,offset:$offset){
           id
           userId
-          userTypeId
           name
           email
           gender
           img
-          job
           count
-          children {
-            id
+          level{
+            id 
             name
-            email
-            gender
-            img
-            userId
-            userTypeId
           }
+          parent{
+              id
+              name
+              img
+              email
+              job
+              gender
+          }
+          class{
+              name
+              level {
+    					  id
+                name
+    					}
+          }
+          
           permissionGroups {
             id
             groupName
-          }
+            }
         }
       }`;
 
     return this.getUnCashed({
-      operationName: 'Parents',
-      query: Parents,
+      operationName: 'students',
+      query: students,
        variables: {
           limit,
           offset
@@ -56,44 +65,85 @@ export class ParentsService {
     return this.http.post('http://10.1.1.28:7070/graphql', payload)
       .map((data) => data.json());
   }
-
-  createParent(user, parent) {
-    const createParent = gql `
-      mutation createParent($user: UserInputAdd!, $parent: ParentInput!){
-        createParent(user: $user, parent: $parent){
+    getAllParents(){
+      const parents=gql `query parents{
+          parents{
+            id 
+            name
+            img
+            gender
+            job
+            email
+          }
+      }`;
+      return this.apollo.watchQuery<any>({
+        query:parents
+      });
+    }
+  getStafftypes(){
+    const StaffType =gql `
+        query StaffType{
+          staffTypes{
+            id
+            type
+          }
+        }
+    `;
+    return this.apollo.watchQuery<any>({
+      query: StaffType
+    });
+  }
+ getAllLevels(){
+   const getlevels = gql `
+    query levels {
+        levels{
+          id
+          
+          name
+        }
+      }
+   `;
+    return this.apollo.watchQuery<any>({
+      query: getlevels
+    });
+ }
+  createStudent(user, student) {
+    const createStudent = gql `
+      mutation createStudent($user: UserInputAdd!, $student: StudentInput!){
+        createStudent(user: $user, student: $student){
           id
           userId
-          userTypeId
           name
           email
-          img
           gender
-          job
-         
+          img
+          level{
+            id
+            name
+          }
         }
       }`;
 
-      return this.apollo.mutate<Parent>({
-        mutation: createParent,
+      return this.apollo.mutate<student>({
+        mutation: createStudent,
         variables: {
           user,
-          parent
+          student
         }
       });
   }
 
-  updateParent(id, user, parent) {
-    const updateParent = gql `
-      mutation updateParent($id:Int!, $user: UserInputUpdate!, $parent: ParentInput!){
-        updateParent(id: $id, user: $user, parent: $parent)
+  updateStudent(id, user, student) {
+    const updateStudent = gql `
+      mutation updateStudent($id:Int!, $user: UserInputUpdate!, $student:  StudentInput!){
+        updateStudent(id: $id, user: $user, student: $student)
       }`;
-
       return this.apollo.mutate({
-        mutation: updateParent,
+        mutation: updateStudent,
         variables: {
           id,
           user,
-          parent
+          student
         }
       });
   }

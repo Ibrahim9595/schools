@@ -1,9 +1,11 @@
+import 'rxjs/add/operator/switchMap';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { remove, findIndex, groupBy } from 'lodash';
-import 'rxjs/add/operator/switchMap';
+import { remove, findIndex, find, groupBy } from 'lodash';
 
+import { NewAssignmentFormOptions } from './new-assignment-form-options';
 import { ClassServiceService } from './class-service.service';
+import { NewAssignment } from './new-assignment';
 
 
 @Component({
@@ -12,6 +14,7 @@ import { ClassServiceService } from './class-service.service';
   styleUrls: ['./class.component.css'],
   providers: [ClassServiceService]
 })
+
 export class ClassComponent implements OnInit {
   class: any;
   openedTab: number = 0;
@@ -23,6 +26,8 @@ export class ClassComponent implements OnInit {
   absence: any[];
   absenceKeys: any = [];
   newAbsenceList: any;
+  todayAbsence: object = {};
+  assignments: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -85,7 +90,7 @@ export class ClassComponent implements OnInit {
   }
 
   getAbcence() {
-    console.log(this.dateStart, this.dateEnd);
+    
     this.service.absence(this.dateStart, this.dateEnd, this.class.id)
       .subscribe(({ data }) => {
         this.absenceKeys = [];
@@ -97,17 +102,34 @@ export class ClassComponent implements OnInit {
             this.absenceKeys[this.absenceKeys.length - 1].students.push(j);
           }
         }
-        console.log(this.absence);
-      })
+      });
   }
 
   addNewAbsenceList(subject) {
-    this.currentSubject = subject;
-    this.newAbsenceList = {};
-
-    for (let student of this.class.students) {
-      this.newAbsenceList[student.id] = { studentId: student.id, notes: '', absent: false };
+    if(this.todayAbsence[subject.subject.id]) {
+      this.newAbsenceList = this.todayAbsence[subject.subject.id];
+      return;
     }
+      
+
+    this.currentSubject = subject;
+    let date = new Date();
+    let today = date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear();
+    
+    this.service.absence(today, today, this.class.id, subject.subject.id)
+    .subscribe(({ data }) => {
+      this.newAbsenceList = {};
+      for (let student of this.class.students) {
+        let absent = find(data.absence, (data)=>{return data.student.id == student.id? data : false});
+
+        this.newAbsenceList[student.id] = { 
+          studentId: student.id, 
+          notes: absent? absent.notes : '', 
+          absent: absent? true : false 
+        };
+      }
+      this.todayAbsence[subject.subject.id] = this.newAbsenceList;
+    });
   }
 
   appendAbsenceDay() {
@@ -123,12 +145,28 @@ export class ClassComponent implements OnInit {
     let date = new Date();
     let today = date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear();
 
-    this.service.appendAbsenceDay(today, this.class.id, this.currentSubject.staff[0].id, this.currentSubject.subject.id, list)
+    this.service
+    .appendAbsenceDay(today, this.class.id, this.currentSubject.staff[0].id, this.currentSubject.subject.id, list)
       .subscribe(({ data }) => {
         alert("Absence Added");
       }, (err) => {
         console.log(err);
         alert('error');
       });
+  }
+
+  getAssignments(subject) {
+    this.currentSubject = subject;
+    this.service.assignments(this.class.id, subject.id)
+    .subscribe(({ data }) => {
+      
+      for(let a of data.assignments){
+        this.assignments.push(a);
+      }
+    });
+  }
+
+  test(){
+    console.log(this.assignments.push({id: 2}));
   }
 }

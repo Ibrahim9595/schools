@@ -40,7 +40,8 @@ export class SubjectComponent implements OnInit {
   }
 
   addStaffToSubject(staffId, subjectId, rate) {
-    if(!staffId || !subjectId || !rate)
+    console.log(staffId, subjectId, rate);
+    if(!staffId && !subjectId && !rate)
       return;
 
     let staff = {

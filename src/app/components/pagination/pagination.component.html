@@ -1,0 +1,12 @@
+<div class="w3-bar paginate-mid" *ngIf="count > 0" >
+	<div class="numbers">
+		<button class="w3-button" (click)="onPage(page-1)" [disabled]="page === 1 || loading" [ngClass]="{ 'disabled': page === 1 || loading }">&lt; Previous</button>
+		<button
+		 class="w3-button"
+			*ngFor="let pageNum of getPages()"
+			(click)="onPage(pageNum)"
+			[ngClass]="{'w3-red': pageNum === page, 'disabled': loading}">{{ pageNum }}</button>
+
+		<button class="w3-button" (click)="onPage(page+1)" [disabled]="lastPage() || loading" [ngClass]="{ 'disabled': lastPage() || loading }">Next &gt;</button>
+	</div>
+</div>

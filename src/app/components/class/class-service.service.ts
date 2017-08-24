@@ -6,8 +6,8 @@ import gql from 'graphql-tag';
 import { find } from 'lodash';
 import 'rxjs/add/operator/map';
 
-
 @Injectable()
+
 export class ClassServiceService {
 
   constructor(private apollo: Apollo, private service: NoCashedQueryService) { }
@@ -145,10 +145,10 @@ export class ClassServiceService {
     });
   }
 
-  absence(dateStart, dateEnd, classId) {
+  absence(dateStart, dateEnd, classId, subjectId?) {
     let abcence = `
-    query absence($dateStart: String!, $dateEnd: String!, $classId: Int!){
-      absence(dateStart: $dateStart, dateEnd:$dateEnd, classId:$classId){
+    query absence($dateStart: String!, $dateEnd: String!, $classId: Int!, $subjectId: Int){
+      absence(dateStart: $dateStart, dateEnd:$dateEnd, classId:$classId, subjectId: $subjectId){
         date
         staff{
           id
@@ -176,7 +176,8 @@ export class ClassServiceService {
       variables: {
         dateStart,
         dateEnd,
-        classId
+        classId,
+        subjectId
       }
     });
   }
@@ -194,11 +195,49 @@ export class ClassServiceService {
     return this.apollo.mutate<data>({
       mutation: appendAbsenceDay,
       variables: {
-        date, 
-        classId, 
-        staffId, 
-        subjectId, 
+        date,
+        classId,
+        staffId,
+        subjectId,
         absentStudents
+      }
+    });
+  }
+
+  assignments(classId, subjectId) {
+    let assignments = gql`
+    query assignments($classId: Int!, $subjectId: Int!){
+      assignments(classId:$classId, subjectId: $subjectId){
+        id
+        notes
+        finalScore
+        dueDate
+        description
+      
+        staff{
+          id
+          name
+        }
+
+        results{
+          notes
+          score
+          student{
+            id
+          }
+        }
+      }
+    }`;
+
+    interface data {
+      assignments: any;
+    };
+
+    return this.apollo.watchQuery<data>({
+      query: assignments,
+      variables: {
+        classId,
+        subjectId
       }
     });
   }

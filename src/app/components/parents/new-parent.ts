@@ -11,6 +11,9 @@ export class NewParent {
         public name?: string, 
         public email?: string, 
         public password ?: string,
+        public repeatpassword ?: string,
+        public gender ?: string,
+        public img ?: string,
         job?: string) {
         this.parent = new Parent(job);
      }

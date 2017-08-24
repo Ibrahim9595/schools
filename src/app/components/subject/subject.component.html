@@ -31,7 +31,7 @@
   <div [style.display]="openedTab == 2? 'block':'none'" class="w3-animate-right">
     <div class="w3-row">
       <div class="w3-col m6 s6">
-        <select class="w3-select" name="option" #id (change)="id.value">
+        <select class="w3-select" name="option" #id>
             <option value="" disabled selected>{{allStaff? 'Staff' : 'Loading...'}}</option>
             <option *ngFor="let staff of allStaff | find: subject.staff:'id'" [value]="staff.id">
               {{staff.name+'('+staff.staff_type.type+')'}}
@@ -42,7 +42,7 @@
         <input class="number" type="number" placeholder="Staff rate" [(ngModel)]="rate">
       </div>
       <div class="w3-col m1 s1">
-        <a class="btn-floating btn-tiny red" (click)="addStaffToSubject(newUserId, subject.id, rate)">
+        <a class="btn-floating btn-tiny red" (click)="addStaffToSubject(id.value, subject.id, rate)">
           <i class="material-icons green darken-1">add</i>
         </a>
       </div>

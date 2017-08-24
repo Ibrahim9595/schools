@@ -19,7 +19,9 @@ export class GroupsPermissionsComponent implements OnInit {
   currentGroup: PermissionGroup = null;
   permissionGroup: NewPermissionGroup = null;
   users: any = null;
-
+  ItemPerPage =5;
+  PageNum=1;
+  count: number;
   permissionLevels = [
     {
       level: 1,
@@ -55,13 +57,16 @@ export class GroupsPermissionsComponent implements OnInit {
 
   constructor(private service: GroupsPermissionsService) { }
 
+  
   ngOnInit() {
-    this.service.init().subscribe(({ data }) => {
-      this.permissionGroups = data.permissionGroups;
-      console.log(data);
-    });
+   this.getAllpermissions(2,0);
   }
-
+   getAllpermissions(limit,offset){
+      this.service.init(limit,offset).subscribe(({ data }) => {
+      this.permissionGroups = data.permissionGroups;
+      this.count= data.permissionGroups[0].count || 1;
+    });
+   }
   clear() {
     this.currentPermission = {
       ...this.currentPermission,
@@ -69,7 +74,10 @@ export class GroupsPermissionsComponent implements OnInit {
       permissionLevel: null
     };
   }
-
+ goPage(n: number): void{
+    this.PageNum=n;
+    this.getAllpermissions(this.ItemPerPage,(n-1)*this.ItemPerPage);
+  }
   openForm(permissionGroup?: PermissionGroup) {
     if (permissionGroup) {
       this.permissionGroup =

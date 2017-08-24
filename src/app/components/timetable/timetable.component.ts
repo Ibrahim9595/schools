@@ -142,6 +142,6 @@ export class TimetableComponent implements OnInit {
       }
     }
     
-    //this.save.emit(ret);
+    this.save.emit(ret);
   }
 }

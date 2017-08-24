@@ -1,5 +1,4 @@
-
-        <ul class="w3-ul w3-card-4 row" style="margin-bottom: 16px;">
+ <ul class="w3-ul w3-card-4 row" style="margin-bottom: 16px;">
           <li style="margin-top:10px; margin-bottom: 10px;">
             <div class="input-field col s6 m65 " >
                       <i class="material-icons prefix">search</i>
@@ -7,34 +6,35 @@
                       <label for="search">Search</label>
             </div>
             <div class="input-field col s6 m6 " >
-                <input  id="search" type="number"  min="1" max="10" (change)="getAllParents(ItemPerPage,0)" [(ngModel)]="ItemPerPage">
+                <input  id="search" type="number"  min="1" max="10" (change)="getAllStaff(ItemPerPage,0)" [(ngModel)]="ItemPerPage">
                 <label [class.active]="ItemPerPage"for="search">Paginate</label>
             </div>
           </li>
-        </ul>
+  </ul>
 
-<div class="row">
+<div class="row">   
+   
   <div class="col s12 m12">
     <ul class="w3-ul w3-card-4 ">
-      <li   (click)="selected(parent.id)" *ngFor="let parent of parents | filter:'name':searchFilter;let i = index" [class]="i%2?'w3-animate-left w3-padding-16 pointer':'w3-animate-right w3-padding-16 pointer'" >
-        <a class="btn-floating btn-tiny waves-effect waves-light red close " (click)="deleteParent(parent.userId)">
+      <li    *ngFor="let staff of staffs | filter:'name':searchFilter;let i = index" [class]="i%2?'w3-animate-left w3-padding-16 pointer':'w3-animate-right w3-padding-16 pointer'" >
+        <a class="btn-floating btn-tiny waves-effect waves-light red close " (click)="deletestaff(staff.userId)">
             <i class="material-icons">close</i>
         </a>
-         <a  (click)="formModal.style.display='block';openForm(parent)" class=" w3-right btn btn-floating btn-medium yellow darken-3 w3-tooltip"
+         <a  (click)="formModal.style.display='block';openform(staff)" class=" w3-right btn btn-floating btn-medium yellow darken-3 w3-tooltip"
           style="overflow: inherit; margin-right: 10px;">
           <i class="material-icons">edit</i>
           <span style="position:absolute;left:0px;top:50px" class="w3-animate-opacity w3-text w3-tag w3-tiny">
                  Edit
           </span>
         </a>
-        <a  (click)="child.style.display='block';getParentchildrens(parent)" class=" w3-right btn btn-floating btn-medium blue darken-3 w3-tooltip"
+        <a  (click)="child.style.display='block';getParentchildrens(staff)" class=" w3-right btn btn-floating btn-medium blue darken-3 w3-tooltip"
           style="overflow: inherit; margin-right: 10px" [style.zIndex]="5-i">
           <i class="material-icons">supervisor_account</i>
           <span style="position:absolute;left:0px;top:50px; " class="w3-animate-opacity w3-text w3-tag w3-tiny">
-                 child
+                 timetable
           </span>
         </a>
-        <a  (click)="groupPermissions.style.display='block';getAllGroups(parent)" class=" w3-right btn btn-floating btn-medium blue darken-3 w3-tooltip"
+        <a  (click)="groupPermissions.style.display='block';getAllGroups(staff)" class=" w3-right btn btn-floating btn-medium blue darken-3 w3-tooltip"
           style="overflow: inherit; margin-right: 10px" [style.zIndex]="5-i">
           <i class="material-icons">lock_open</i>
           <span style="position:absolute;left:0px;top:50px; " class="w3-animate-opacity w3-text w3-tag w3-tiny">
@@ -42,68 +42,42 @@
           </span>
         </a>
         
-        <img [src]="parent.img==''?defualt[parent.gender]:defualt['img_url']+parent.img" class="w3-left w3-circle w3-margin-right" style="width:50px">
-        <span class="w3-large">{{parent.name}}</span><br>
-        <span>{{parent.job}}</span>
+        <img [src]="(staff.img==null || staff.img=='')?defualt[staff.gender]:defualt['img_url']+staff.img" class="w3-left w3-circle w3-margin-right" style="width:50px">
+        <span class="w3-large">{{staff.name}}</span><br>
+        <span>{{staff.staff_type.type}}</span>
       </li>
-       <li>
+      <li>
 <app-pagination [page]="1" [PerPage]="ItemPerPage" [PerSlide]=4 [count]="count" (goPage)="goPage($event)"></app-pagination>
 
       </li>
     </ul>
   </div>
-</div>
+
+
+
+
 <div #formModal class="w3-modal">
-  <div *ngIf="parent">
+  <div *ngIf="newStaff">
     <div class="w3-modal-content w3-card-4 w3-animate-zoom">
       <header class="w3-container w3-black">
-        <span (click)="formModal.style.display='none';parent=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
-        <h5>{{(parent.name)?'Edit':'Create'}} {{parent.name}}</h5>
+        <span (click)="formModal.style.display='none';newStaff=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
+        <h5>{{(newStaff.user.name)?'Edit ':'Create'}}{{newStaff.user.name}}</h5>
       </header>
-
-      <app-dynamic-form [data]="parent" [options]="parentFormOptions" (save)="parent.updating? updateParent($event,formModal) : createParent($event)"></app-dynamic-form>
+      <app-dynamic-form [data]="newStaff" [options]="StaffFormOptions" (save)="newStaff.updating? updateStaff($event,formModal) : createStaff($event)"></app-dynamic-form>
       <div class="w3-container w3-light-grey w3-padding">
       </div>
     </div>
   </div>
 </div>
-<div class="fixed-action-btn" (click)="formModal.style.display='block';openForm()">
+<div class="fixed-action-btn" (click)="formModal.style.display='block';openform()">
   <a class="btn-floating btn-large red">
     <i class="material-icons green darken-1">add</i>
   </a>
 </div>
 
 
-
-<div #child class="w3-modal">
-  
-  <div *ngIf="childrens">
-    
-    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
-      <header class="w3-container w3-black">
-        <span (click)="child.style.display='none';currentGroup=null;" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
-        <h5>Childrens</h5>
-      </header>
-
-      <div class="collection " style="overflow-y: auto ; max-height: 300px;">
-        <span  class="Dspan w3-center " *ngIf='!childrens.length'>0 children found go and delete him </span>
-        <div class="collection">
-          <a *ngFor="let child of childrens" class="collection-item avatar">
-            <img [src]="child.img==''?defualt[child.gender]:defualt['img_url']+child.img"alt="child.name" class="circle">
-            <span class="title">{{child.name}}</span>
-            <p><br>
-             
-            </p>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <div #groupPermissions class="w3-modal">
-  <div *ngIf="currentParent && allgroups">
+  <div *ngIf="currentStaff && allgroups">
     <div class="w3-modal-content w3-card-4 w3-animate-zoom">
       <header class="w3-container w3-black">
         <span (click)="groupPermissions.style.display='none';" class="w3-button w3-black w3-xlarge w3-display-topright">&times;</span>
@@ -117,7 +91,7 @@
             <select class="w3-select"[(ngModel)]="selectedPG" name="option">
             <option value="" disabled selected>Permissions</option>
             
-            <option *ngFor="let group of allgroups | find: currentParent.permissionGroups:'id'" 
+            <option *ngFor="let group of allgroups | find: currentStaff.permissionGroups:'id'" 
             [value]="group.id">{{group.groupName}}</option>
           </select>
           </div>
@@ -135,7 +109,7 @@
 
 
         <ul class="collection">
-          <li *ngFor="let group of currentParent.permissionGroups | filter:'groupName':searchGroup" class="collection-item dismissable">
+          <li *ngFor="let group of currentStaff.permissionGroups | filter:'groupName':searchGroup" class="collection-item dismissable">
             <div class="w3-row">
               <div class="w3-col m6 s12">
                 <p>{{group.groupName}}</p>

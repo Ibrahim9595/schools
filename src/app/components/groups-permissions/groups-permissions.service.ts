@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { NoCashedQueryService } from '../../no-cashed-query.service';
+import { Http } from '@angular/http';
 import gql from 'graphql-tag';
 
 import { find } from 'lodash';
@@ -14,15 +14,16 @@ import { User } from './user';
 @Injectable()
 export class GroupsPermissionsService {
 
-  constructor(private apollo: Apollo, private service: NoCashedQueryService) { }
+  constructor(private apollo: Apollo, private http: Http) { }
 
-  init() {
+  init(limit,offset) {
     const permissionGroups = `
-      query PermissionGroups {
-        permissionGroups{
+      query PermissionGroups($limit:Int,$offset:Int) {
+        permissionGroups(limit:$limit,offset:$offset){
           id
           groupName
           description
+          count
           permissions{
             id
             name
@@ -38,7 +39,7 @@ export class GroupsPermissionsService {
         }
       }`;
 
-    return this.service.getUnCashed({
+    return this.getUnCashed({
       operationName: 'PermissionGroups',
       query: permissionGroups
     });
@@ -278,4 +279,8 @@ export class GroupsPermissionsService {
     });
   }
 
+  getUnCashed(payload: { operationName: string, query: string, variables?: any }) {
+    return this.http.post('http://10.1.1.28:7070/graphql', payload)
+      .map((data) => data.json());
+  }
 } 
