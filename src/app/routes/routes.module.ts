@@ -10,7 +10,7 @@ import { ClassComponent } from '../components/class/class.component';
 import { SubjectComponent } from '../components/subject/subject.component';
 
 const routes: Routes = [
-  { path: '',   redirectTo: '/home', pathMatch: 'full' },
+  { path: '',   redirectTo: '/permission-groups', pathMatch: 'full' },
   {path: 'permission-groups', component: GroupsPermissionsComponent},
   {path: 'parents', component: ParentsComponent},
   {path: 'student', component: StudentComponent},
